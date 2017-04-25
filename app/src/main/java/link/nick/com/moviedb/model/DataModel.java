@@ -1,7 +1,16 @@
 package link.nick.com.moviedb.model;
 
-import java.util.List;
+import android.content.Context;
+import android.util.Log;
 
+import link.nick.com.moviedb.Const;
+import link.nick.com.moviedb.database.MoviesDatabase;
+import link.nick.com.moviedb.database.MoviesDatabaseImpl;
+import link.nick.com.moviedb.rest.ApiClient;
+import link.nick.com.moviedb.rest.ApiInterface;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
 
@@ -12,43 +21,55 @@ import rx.subjects.BehaviorSubject;
 public class DataModel {
 
     private String TAG = DataModel.class.getSimpleName();
-    private boolean cacheIsEmpty = true;
-    List<Movie> movies;
+    private MovieResponse movies;
+    private MoviesDatabase database;
+    private BehaviorSubject<MovieResponse> observableMovieResponse;
 
-    private BehaviorSubject<List<Movie>> recordsSubject = BehaviorSubject.create();
-
-    public Observable<List<Movie>> getRecords() {
-        return null; //Observable.<List<Movie>>create(
-//                subscriber -> {
-//            // some synchronization here - begin
-//            if (cacheIsEmpty) {
-//                List<Movie> records = loadRecordsFromWeb();
-//                saveInDatabase(records);
-//            }
-//            // some synchronization here - end
-//
-//            List<Movie> cachedRecords = getListFromDatabase();
-//
-//            subscriber.onNext(cachedRecords);
-//            subscriber.onCompleted();
-//        })
-//                .flatMap(records -> {
-//                    recordsSubject.onNext(records);
-//                    return recordsSubject.asObservable();
-//                });
+    public DataModel(Context context) {
+        database = new MoviesDatabaseImpl(context);
     }
 
-    private List<Movie> loadRecordsFromWeb(){
+    public void loadData(){
+        observableMovieResponse = BehaviorSubject.create();
+        if(getListFromDatabase() != null) {
+//            listener.getData(getListFromDatabase());
+            Log.e(TAG, "-> getListFromDatabase() != null");
+            observableMovieResponse.onNext(getListFromDatabase());
+        } else {
+            ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
+            Call<MovieResponse> call = apiInterface.getTopRatedMovies(Const.v3auth_key);
+            call.enqueue(new Callback<MovieResponse>() {
+                @Override
+                public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
+                    Log.e(TAG, "-> onResponse");
+                    movies = response.body();
+                    saveInDatabase(movies);
+                    observableMovieResponse.onNext(movies);
+                }
 
-        return movies;
+                @Override
+                public void onFailure(Call<MovieResponse> call, Throwable t) {
+                    Log.e(TAG, t.toString());
+                    observableMovieResponse.onError(t);
+                }
+            });
+
+        }
     }
 
-    private List<Movie> getListFromDatabase(){
-        return movies;
+    private MovieResponse getListFromDatabase(){
+        return database.getMovies();
     }
 
-    private void saveInDatabase(List<Movie> list){
-        this.movies = list;
+    private void saveInDatabase(MovieResponse response){
+        database.saveMovies(response);
+    }
+
+    public Observable<MovieResponse> getObservableMovieResponse(){
+        if(observableMovieResponse == null){
+            loadData();
+        }
+        return observableMovieResponse;
     }
 
 }

@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -22,6 +23,16 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
     private List<Movie> movies;
     private int rowLayout;
     private Context context;
+    OnRecyclerViewItemClickListener listener;
+
+    /**
+     * Custom created method for Setting the item click listener for the items and items with in items
+     * @param listener OnRecyclerViewItemClickListener
+     */
+    public void setOnItemClickListener(OnRecyclerViewItemClickListener listener)
+    {
+        this.listener = listener;
+    }
 
     public static class MovieViewHolder extends RecyclerView.ViewHolder {
         LinearLayout moviesLayout;
@@ -29,6 +40,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
         TextView data;
         TextView movieDescription;
         TextView rating;
+        ImageView ratingImage;
 
 
         public MovieViewHolder(View v) {
@@ -38,6 +50,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
             data = (TextView) v.findViewById(R.id.subtitle);
             movieDescription = (TextView) v.findViewById(R.id.description);
             rating = (TextView) v.findViewById(R.id.rating);
+            ratingImage = (ImageView) v.findViewById(R.id.rating_image);
         }
     }
 
@@ -59,6 +72,24 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
         holder.data.setText(movies.get(position).getReleaseDate());
         holder.movieDescription.setText(movies.get(position).getOverview());
         holder.rating.setText(movies.get(position).getVoteAverage().toString());
+
+        holder.moviesLayout.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                listener.onRecyclerViewItemClicked(position, -1);
+            }
+        });
+        holder.ratingImage.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                listener.onRecyclerViewItemClicked(position, v.getId());
+            }
+        });
+
     }
 
     @Override
