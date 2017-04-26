@@ -1,6 +1,5 @@
 package link.nick.com.moviedb.activity;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -12,24 +11,25 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import link.nick.com.moviedb.R;
 import link.nick.com.moviedb.adapter.RecyclerClick;
-import link.nick.com.moviedb.fragments.Exit;
-import link.nick.com.moviedb.fragments.Search;
-import link.nick.com.moviedb.fragments.TopRated;
+import link.nick.com.moviedb.presenter.MainPresenter;
+import link.nick.com.moviedb.presenter.MainPresenterImpl;
+import link.nick.com.moviedb.presenter.MainView;
 
-public class MainActivity extends AppCompatActivity implements RecyclerClick {
+public class MainActivity extends AppCompatActivity implements RecyclerClick, MainView {
 
-    static String TAG = MainActivity.class.getSimpleName();
+    private String TAG = MainActivity.class.getSimpleName();
     private CoordinatorLayout coordinatorLayout;
-
     private Toolbar toolbar;
-    BottomNavigationView navigationView;
-
-    ProgressDialog dialog;
-    Fragment topRated, search, exit;
+    private BottomNavigationView navigationView;
+    private FrameLayout redCircle;
+    private TextView countTextView;
+    private MainPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,61 +41,33 @@ public class MainActivity extends AppCompatActivity implements RecyclerClick {
         navigationView = (BottomNavigationView) findViewById(R.id.navigation);
         setSupportActionBar(toolbar);
 
-        topRated = getSupportFragmentManager().findFragmentById(R.id.container);
-        if (topRated == null) {
-            topRated = new TopRated();
-            getSupportFragmentManager().
-                    beginTransaction().add(R.id.container, topRated)
-                    .commit();
-        }
+        presenter = new MainPresenterImpl(this);
+        presenter.restoreInstanseState(savedInstanceState);
 
-        search = new Search();
-        exit = new Exit();
-
-
-        navigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+        navigationView.setOnNavigationItemSelectedListener(new BottomNavigationView
+                .OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
-                int id = item.getItemId();
-                switch (id) {
-                    case R.id.action_item1:
-                        getSupportFragmentManager().
-                                beginTransaction().replace(R.id.container, topRated)
-                                .commit();
-//                        showSnack(getString(R.string.item_1));
-                        return true;
-                    case R.id.action_item2:
-                        getSupportFragmentManager().
-                                beginTransaction().replace(R.id.container, search)
-                                .commit();
-//                        showSnack(getString(R.string.item_2));
-                        return true;
-                    case R.id.action_item3:
-                        getSupportFragmentManager().
-                                beginTransaction().replace(R.id.container, exit)
-                                .commit();
-//                        showSnack(getString(R.string.item_3));
-                        return true;
-                }
-
+                presenter.navigationItemClick(item.getItemId());
                 return true;
             }
         });
-
     }
 
-
-
-
-    public void hideLoadingIndicator() {
-        if (dialog != null && dialog.isShowing())
-            dialog.dismiss();
-    }
-
-    public void showLoadingIndicator() {
-        dialog = new ProgressDialog(this);
-        dialog.show();
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        final MenuItem alertMenuItem = menu.findItem(R.id.refresh);
+        FrameLayout rootView = (FrameLayout) alertMenuItem.getActionView();
+        redCircle = (FrameLayout) rootView.findViewById(R.id.view_alert_red_circle);
+        countTextView = (TextView) rootView.findViewById(R.id.view_alert_count_textview);
+        rootView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onOptionsItemSelected(alertMenuItem);
+            }
+        });
+        presenter.setMenuStatus();
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -106,31 +78,43 @@ public class MainActivity extends AppCompatActivity implements RecyclerClick {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        switch (id) {
-            case R.id.refresh:
-                showSnack(getString(R.string.refresh));
-                return true;
-        }
+        presenter.onOptionsItemClick(item.getItemId());
         return super.onOptionsItemSelected(item);
+    }
+
+    public void showFragment(Fragment fragment) {
+        getSupportFragmentManager().
+                beginTransaction()
+                .replace(R.id.container, fragment)
+                .commit();
+    }
+
+    public void updateAlertIcon(String count, int visible) {
+        countTextView.setText(count);
+        redCircle.setVisibility(visible);
+
     }
 
     @Override
     public void onClick(int position, int id) {
         showSnack("Pressed position " + position
                 + " item " + id);
-
     }
 
-    private void showSnack(String message){
+    @Override
+    public void showSnack(String message) {
         Snackbar.make(coordinatorLayout, message, Snackbar.LENGTH_INDEFINITE)
                 .setAction(R.string.try_again, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Toast.makeText(getApplicationContext(), "Respect!", Toast.LENGTH_LONG).show();
                     }
-                })
-                .show();
+                }).show();
+    }
+
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        presenter.saveInstanseState(outState);
     }
 
 }

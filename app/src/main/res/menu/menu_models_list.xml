@@ -5,7 +5,7 @@
     <item
         android:id="@+id/refresh"
         android:title="@string/refresh"
-        android:icon="@drawable/star"
-        app:showAsAction="always" />
+        app:showAsAction="always"
+        app:actionLayout="@layout/view_alertsbadge"/>
 
 </menu>
