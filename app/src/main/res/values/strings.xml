@@ -6,4 +6,8 @@
     
     <string name="v3auth_key">99602a08ae69e3b5e73f8e69ca38d3a1</string>
     <string name="v4auth_key">eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5OTYwMmEwOGFlNjllM2I1ZTczZjhlNjljYTM4ZDNhMSIsInN1YiI6IjU4ZjY3MDIwYzNhMzY4NDE2ZDAwMWVjZiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.pezaWcYOBkvQx04QP0BMkIBD5BFnJ4YQq__OkMf2H4Y</string>
+
+    <string name="item_1">Top Rated</string>
+    <string name="item_2">Search</string>
+    <string name="item_3">Exit</string>
 </resources>

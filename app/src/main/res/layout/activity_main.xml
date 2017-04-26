@@ -25,15 +25,23 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:paddingEnd="@dimen/activity_horizontal_margin"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingStart="@dimen/activity_horizontal_margin">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <!--android:paddingEnd="@dimen/activity_horizontal_margin"-->
+        <!--android:paddingLeft="@dimen/activity_horizontal_margin"-->
+        <!--android:paddingRight="@dimen/activity_horizontal_margin"-->
+        <!--android:paddingStart="@dimen/activity_horizontal_margin"-->
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/movies_recycler_view"
+        <android.support.design.widget.BottomNavigationView
+            android:id="@+id/navigation"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="@color/colorWhite"
+            app:itemBackground="@color/colorWhite"
+            app:itemIconTint="@color/navbar_selector"
+            app:itemTextColor="@color/navbar_selector"
+            app:menu="@menu/bottom_navigation_items" />
     </FrameLayout>
+
+
 </android.support.design.widget.CoordinatorLayout>

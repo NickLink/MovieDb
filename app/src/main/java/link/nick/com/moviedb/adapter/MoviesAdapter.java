@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
 
 import link.nick.com.moviedb.R;
@@ -23,35 +25,31 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
     private List<Movie> movies;
     private int rowLayout;
     private Context context;
-    OnRecyclerViewItemClickListener listener;
-
-    /**
-     * Custom created method for Setting the item click listener for the items and items with in items
-     * @param listener OnRecyclerViewItemClickListener
-     */
-    public void setOnItemClickListener(OnRecyclerViewItemClickListener listener)
-    {
-        this.listener = listener;
-    }
+    private String TAG = MoviesAdapter.class.getCanonicalName();
+    private RecyclerClick listener;
 
     public static class MovieViewHolder extends RecyclerView.ViewHolder {
         LinearLayout moviesLayout;
+        ImageView imageView;
         TextView movieTitle;
         TextView data;
         TextView movieDescription;
         TextView rating;
-        ImageView ratingImage;
 
 
         public MovieViewHolder(View v) {
             super(v);
             moviesLayout = (LinearLayout) v.findViewById(R.id.movies_layout);
+            imageView = (ImageView) v.findViewById(R.id.imageView);
             movieTitle = (TextView) v.findViewById(R.id.title);
             data = (TextView) v.findViewById(R.id.subtitle);
             movieDescription = (TextView) v.findViewById(R.id.description);
             rating = (TextView) v.findViewById(R.id.rating);
-            ratingImage = (ImageView) v.findViewById(R.id.rating_image);
         }
+    }
+
+    public void setOnClick(RecyclerClick listener){
+        this.listener = listener;
     }
 
     public MoviesAdapter(List<Movie> movies, int rowLayout, Context context) {
@@ -69,27 +67,25 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
     @Override
     public void onBindViewHolder(MovieViewHolder holder, final int position) {
         holder.movieTitle.setText(movies.get(position).getTitle());
+        Picasso.with(context).load("http://image.tmdb.org/t/p/w92/" + movies.get(position).getPosterPath())
+                .into(holder.imageView);
         holder.data.setText(movies.get(position).getReleaseDate());
         holder.movieDescription.setText(movies.get(position).getOverview());
         holder.rating.setText(movies.get(position).getVoteAverage().toString());
 
-        holder.moviesLayout.setOnClickListener(new View.OnClickListener()
-        {
+        holder.moviesLayout.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
-                listener.onRecyclerViewItemClicked(position, -1);
-            }
-        });
-        holder.ratingImage.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                listener.onRecyclerViewItemClicked(position, v.getId());
+            public void onClick(View view) {
+                listener.onClick(position, 100);
             }
         });
 
+        holder.imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listener.onClick(position, 101);
+            }
+        });
     }
 
     @Override

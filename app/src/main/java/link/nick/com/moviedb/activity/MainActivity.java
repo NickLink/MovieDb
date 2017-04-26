@@ -2,42 +2,34 @@ package link.nick.com.moviedb.activity;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import java.util.List;
-
 import link.nick.com.moviedb.R;
-import link.nick.com.moviedb.adapter.MoviesAdapter;
-import link.nick.com.moviedb.adapter.OnRecyclerViewItemClickListener;
-import link.nick.com.moviedb.model.DataModel;
-import link.nick.com.moviedb.model.Movie;
-import link.nick.com.moviedb.model.MovieResponse;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import link.nick.com.moviedb.adapter.RecyclerClick;
+import link.nick.com.moviedb.fragments.Exit;
+import link.nick.com.moviedb.fragments.Search;
+import link.nick.com.moviedb.fragments.TopRated;
 
-public class MainActivity extends AppCompatActivity implements OnRecyclerViewItemClickListener{
+public class MainActivity extends AppCompatActivity implements RecyclerClick {
 
     static String TAG = MainActivity.class.getSimpleName();
     private CoordinatorLayout coordinatorLayout;
-    RecyclerView recyclerView;
+
     private Toolbar toolbar;
-    List<Movie> moviesList;
-    MoviesAdapter adapter;
+    BottomNavigationView navigationView;
+
     ProgressDialog dialog;
-    DataModel model;
-    Subscription subscription;
+    Fragment topRated, search, exit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,44 +38,54 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
 
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.root);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
+        navigationView = (BottomNavigationView) findViewById(R.id.navigation);
         setSupportActionBar(toolbar);
 
-        recyclerView = (RecyclerView) findViewById(R.id.movies_recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        model = new DataModel(this);
-        loadData();
+        topRated = getSupportFragmentManager().findFragmentById(R.id.container);
+        if (topRated == null) {
+            topRated = new TopRated();
+            getSupportFragmentManager().
+                    beginTransaction().add(R.id.container, topRated)
+                    .commit();
+        }
+
+        search = new Search();
+        exit = new Exit();
+
+
+        navigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+                int id = item.getItemId();
+                switch (id) {
+                    case R.id.action_item1:
+                        getSupportFragmentManager().
+                                beginTransaction().replace(R.id.container, topRated)
+                                .commit();
+//                        showSnack(getString(R.string.item_1));
+                        return true;
+                    case R.id.action_item2:
+                        getSupportFragmentManager().
+                                beginTransaction().replace(R.id.container, search)
+                                .commit();
+//                        showSnack(getString(R.string.item_2));
+                        return true;
+                    case R.id.action_item3:
+                        getSupportFragmentManager().
+                                beginTransaction().replace(R.id.container, exit)
+                                .commit();
+//                        showSnack(getString(R.string.item_3));
+                        return true;
+                }
+
+                return true;
+            }
+        });
+
     }
 
-    public void loadData(){
-        showLoadingIndicator();
-        model.loadData();
-        model.getObservableMovieResponse()
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<MovieResponse>() {
-                    @Override
-                    public void onCompleted() {
-                        Log.e(TAG, " -> onCompleted ");
-                    }
 
-                    @Override
-                    public void onError(Throwable throwable) {
-                        hideLoadingIndicator();
-                        Toast.makeText(MainActivity.this,
-                                "Loading error -> " + throwable.getLocalizedMessage(),
-                                Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onNext(MovieResponse response) {
-                        moviesList = response.getResults();
-                        adapter = new MoviesAdapter(moviesList, R.layout.list_item_movie, getApplicationContext());
-                        adapter.setOnItemClickListener(MainActivity.this);
-                        recyclerView.setAdapter(adapter);
-                        hideLoadingIndicator();
-                    }
-                });
-    }
 
 
     public void hideLoadingIndicator() {
@@ -107,17 +109,21 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
         int id = item.getItemId();
         switch (id) {
             case R.id.refresh:
-                Log.d(TAG, "refresh clicked");
-                loadData();
+                showSnack(getString(R.string.refresh));
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public void onRecyclerViewItemClicked(int position, int id) {
-        Snackbar.make(coordinatorLayout, "Pressed position " + position
-                + " item " + id, Snackbar.LENGTH_INDEFINITE)
+    public void onClick(int position, int id) {
+        showSnack("Pressed position " + position
+                + " item " + id);
+
+    }
+
+    private void showSnack(String message){
+        Snackbar.make(coordinatorLayout, message, Snackbar.LENGTH_INDEFINITE)
                 .setAction(R.string.try_again, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -125,7 +131,6 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
                     }
                 })
                 .show();
-
     }
 
 }
