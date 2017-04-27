@@ -21,22 +21,19 @@ import rx.schedulers.Schedulers;
 public class TopRatedPresenterImpl implements TopRatedPresenter {
 
     private String TAG = TopRatedPresenterImpl.class.getSimpleName();
-    private Context context;
     private DataModel model;
     private List<Movie> moviesList;
     private MoviesAdapter adapter;
     private TopRatedView topRatedView;
 
-    public TopRatedPresenterImpl(Context context, TopRatedView topRatedView) {
+    public TopRatedPresenterImpl(TopRatedView topRatedView) {
         this.topRatedView = topRatedView;
-        this.context = context;
-        model = new DataModel(context);
     }
 
     @Override
-    public void loadData() {
+    public void loadData(final Context context) {
         topRatedView.showLoadingIndicator();
-
+        model = new DataModel(context);
         model.loadData();
         model.getObservableMovieResponse()
                 .subscribeOn(Schedulers.newThread())
@@ -65,6 +62,7 @@ public class TopRatedPresenterImpl implements TopRatedPresenter {
 
     @Override
     public void recyclerClick(int position, int id) {
-
+        topRatedView.showSnack("Hello from " + position + " & " + id);
     }
+
 }

@@ -10,5 +10,6 @@ public interface TopRatedView {
     void showLoadingIndicator();
     void hideLoadingIndicator();
     void setAdapter(MoviesAdapter adapter);
+    void showSnack(String message);
     void showToast(String message);
 }

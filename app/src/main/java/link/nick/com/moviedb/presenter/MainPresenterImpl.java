@@ -95,14 +95,14 @@ public class MainPresenterImpl implements MainPresenter {
         mainView.showFragment(getFragment(itemId));
     }
 
-    @Override
-    public int getFragmentId() {
-        return fragmentId;
-    }
-
-    @Override
-    public int getAlertCount(){
-        return this.alertCount;
-    }
+//    @Override
+//    public int getFragmentId() {
+//        return fragmentId;
+//    }
+//
+//    @Override
+//    public int getAlertCount(){
+//        return this.alertCount;
+//    }
 
 }
