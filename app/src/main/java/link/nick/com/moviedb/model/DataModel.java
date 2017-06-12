@@ -72,4 +72,9 @@ public class DataModel {
         return observableMovieResponse;
     }
 
+    public void onDestroy(){
+        observableMovieResponse.subscribe().unsubscribe();
+    }
+
+
 }

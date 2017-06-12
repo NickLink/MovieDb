@@ -8,4 +8,10 @@
         app:showAsAction="always"
         app:actionLayout="@layout/view_alertsbadge"/>
 
+    <item
+        android:id="@+id/share"
+        android:title="@string/share"
+        app:showAsAction="always"
+        app:actionLayout="@layout/view_share" />
+
 </menu>

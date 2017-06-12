@@ -10,4 +10,5 @@ public interface MainView {
     void showSnack(String message);
     void updateAlertIcon(String count, int visible);
     void showFragment(Fragment fragment);
+    void startShare(String message);
 }

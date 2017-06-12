@@ -30,9 +30,6 @@ public class TopRated extends Fragment implements RecyclerClick, TopRatedView{
     private TopRatedPresenter topRatedPresenter = new TopRatedPresenterImpl(this);;
     private ProgressBar progressBar;
 
-//    DataModel model;
-//    MoviesAdapter adapter;
-
     public TopRated() {
     }
 
@@ -94,5 +91,9 @@ public class TopRated extends Fragment implements RecyclerClick, TopRatedView{
         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
     }
 
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        topRatedPresenter.onDestroy();
+    }
 }

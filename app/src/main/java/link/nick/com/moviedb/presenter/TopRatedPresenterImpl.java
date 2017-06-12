@@ -34,7 +34,7 @@ public class TopRatedPresenterImpl implements TopRatedPresenter {
     public void loadData(final Context context) {
         topRatedView.showLoadingIndicator();
         model = new DataModel(context);
-        model.loadData();
+        //model.loadData();
         model.getObservableMovieResponse()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -63,6 +63,11 @@ public class TopRatedPresenterImpl implements TopRatedPresenter {
     @Override
     public void recyclerClick(int position, int id) {
         topRatedView.showSnack("Hello from " + position + " & " + id);
+    }
+
+    @Override
+    public void onDestroy() {
+        model.onDestroy();
     }
 
 }

@@ -2,6 +2,7 @@ package link.nick.com.moviedb.presenter;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import link.nick.com.moviedb.R;
@@ -32,19 +33,19 @@ public class MainPresenterImpl implements MainPresenter {
         switch (fragmentId) {
             case 0:
                 topRated = new TopRated();
-                mainView.showSnack("From presenter TopRated");
+                //mainView.showSnack("From presenter TopRated");
                 return topRated;
             case R.id.action_item1:
                 topRated = new TopRated();
-                mainView.showSnack("From presenter TopRated");
+                //mainView.showSnack("From presenter TopRated");
                 return topRated;
             case R.id.action_item2:
                 search = new Search();
-                mainView.showSnack("From presenter Search");
+                //mainView.showSnack("From presenter Search");
                 return search;
             case R.id.action_item3:
                 exit = new Exit();
-                mainView.showSnack("From presenter Exit");
+                //mainView.showSnack("From presenter Exit");
                 return exit;
         }
         return null;
@@ -65,6 +66,10 @@ public class MainPresenterImpl implements MainPresenter {
                 }
                 visibility = (alertCount > 0) ? View.VISIBLE : View.GONE;
                 mainView.updateAlertIcon(message, visibility);
+                break;
+            case R.id.share:
+                Log.e(TAG, "-->> case R.id.share: " + itemId);
+                mainView.startShare("Yahoooo!!!");
                 break;
         }
     }
