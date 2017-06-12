@@ -2,6 +2,7 @@ package link.nick.com.moviedb.presenter;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
@@ -27,7 +28,7 @@ public class MainPresenterImpl implements MainPresenter {
         this.mainView = mainView;
     }
 
-    @Override
+//    @Override
     public android.support.v4.app.Fragment getFragment(int id) {
         this.fragmentId = id;
         switch (fragmentId) {
@@ -55,6 +56,11 @@ public class MainPresenterImpl implements MainPresenter {
     public void onOptionsItemClick(int itemId) {
         switch (itemId) {
             case R.id.refresh:
+
+                AppCompatActivity activity = (AppCompatActivity) mainView;
+                TopRated top = (TopRated)activity.getSupportFragmentManager().findFragmentByTag("top");
+                if(top != null) top.getTopRatedPresenter().loadData(activity);
+
                 alertCount = (alertCount + 1) % 10;
                 String message;
                 int visibility;
@@ -86,7 +92,7 @@ public class MainPresenterImpl implements MainPresenter {
             alertCount = savedInstanceState.getInt("count");
             fragmentId = savedInstanceState.getInt("fragment");
         }
-        mainView.showFragment(getFragment(fragmentId));
+        mainView.showFragment(getFragment(fragmentId), getTagById(fragmentId));
     }
 
     @Override
@@ -97,7 +103,8 @@ public class MainPresenterImpl implements MainPresenter {
 
     @Override
     public void navigationItemClick(int itemId) {
-        mainView.showFragment(getFragment(itemId));
+
+        mainView.showFragment(getFragment(itemId), getTagById(itemId));
     }
 
 //    @Override
@@ -109,5 +116,19 @@ public class MainPresenterImpl implements MainPresenter {
 //    public int getAlertCount(){
 //        return this.alertCount;
 //    }
+
+    public String getTagById(int id){
+        String tag = null;
+        switch (id){
+            case R.id.action_item1:
+                return "top";
+            case R.id.action_item2:
+                return "search";
+            case R.id.action_item3:
+                return "exit";
+            default:
+                return "top";
+        }
+    }
 
 }

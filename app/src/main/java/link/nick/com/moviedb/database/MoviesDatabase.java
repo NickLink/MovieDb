@@ -9,4 +9,5 @@ import link.nick.com.moviedb.model.MovieResponse;
 public interface MoviesDatabase {
     void saveMovies(MovieResponse response);
     MovieResponse getMovies();
+    void deleteMovies();
 }

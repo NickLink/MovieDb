@@ -8,6 +8,7 @@ import android.content.Context;
 
 public interface TopRatedPresenter {
     void loadData(Context context);
+    void deleteData();
     void recyclerClick(int position, int id);
     void onDestroy();
 }

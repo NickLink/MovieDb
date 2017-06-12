@@ -47,6 +47,16 @@ public class MainActivity extends AppCompatActivity implements RecyclerClick, Ma
         ButterKnife.bind(this);
 //        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.root);
 //        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (dataFragment == null) {
+            dataFragment = new RetainDataFragment();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(dataFragment, "retain")
+                    .commit();
+
+        }
+
+
         navigationView = (BottomNavigationView) findViewById(R.id.navigation);
         setSupportActionBar(toolbar);
 
@@ -62,14 +72,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClick, Ma
             }
         });
 
-        if (dataFragment == null) {
-            dataFragment = new RetainDataFragment();
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(dataFragment, "retain")
-                    .commit();
 
-        }
 
     }
 
@@ -118,10 +121,10 @@ public class MainActivity extends AppCompatActivity implements RecyclerClick, Ma
         return super.onOptionsItemSelected(item);
     }
 
-    public void showFragment(Fragment fragment) {
+    public void showFragment(Fragment fragment, String tag) {
         getSupportFragmentManager().
                 beginTransaction()
-                .replace(R.id.container, fragment)
+                .replace(R.id.container, fragment, tag)
                 .commit();
     }
 

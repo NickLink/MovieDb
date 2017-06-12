@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -27,7 +28,8 @@ public class TopRated extends Fragment implements RecyclerClick, TopRatedView{
 
     private String TAG = TopRated.class.getSimpleName();
     private RecyclerView recyclerView;
-    private TopRatedPresenter topRatedPresenter = new TopRatedPresenterImpl(this);;
+    private TopRatedPresenter topRatedPresenter = new TopRatedPresenterImpl(this);
+    private SwipeRefreshLayout swipe_container;
     private ProgressBar progressBar;
 
     public TopRated() {
@@ -42,9 +44,19 @@ public class TopRated extends Fragment implements RecyclerClick, TopRatedView{
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.toprated_fragment, container, false);
+        //swipe_container = (SwipeRefreshLayout) v.findViewById(R.id.swipe_container);
         recyclerView = (RecyclerView) v.findViewById(R.id.movies_recycler_view);
         progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+//        swipe_container.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                topRatedPresenter.deleteData();
+//                topRatedPresenter.loadData(getActivity());
+//                swipe_container.setRefreshing(false);
+//            }
+//        });
         return v;
     }
 
@@ -89,6 +101,10 @@ public class TopRated extends Fragment implements RecyclerClick, TopRatedView{
     @Override
     public void showToast(String message) {
         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    public TopRatedPresenter getTopRatedPresenter(){
+        return topRatedPresenter;
     }
 
     @Override

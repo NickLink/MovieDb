@@ -28,7 +28,7 @@ public class MoviesDatabaseImpl implements MoviesDatabase {
     @Override
     public void saveMovies(MovieResponse response) {
         if (response == null) {
-            prefs.edit().putString(PREF_MY_OBJECT, "").commit();
+            deleteMovies();
         } else {
             prefs.edit().putString(PREF_MY_OBJECT, gson.toJson(response)).commit();
         }
@@ -46,5 +46,10 @@ public class MoviesDatabaseImpl implements MoviesDatabase {
             }
         }
         return response;
+    }
+
+    @Override
+    public void deleteMovies() {
+        prefs.edit().remove(PREF_MY_OBJECT).commit();
     }
 }
